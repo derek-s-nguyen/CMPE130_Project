@@ -1,4 +1,4 @@
-# CMPE130_Project
+# OS Scheduler
 
 CMPE 130 Project
 **By:** Derek Nguyen, Tiffany Nguyen, and Sammy Perez
