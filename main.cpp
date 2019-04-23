@@ -192,7 +192,91 @@ void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
 	}
 	outputJobs(jobsArry, numberOfJobs);
 }
-void STCF(Jobs *jobsArry, int numberOfJobs){}//yet to be implemented
+
+void STCF(Jobs *jobsArry, int numberOfJobs){
+
+	int a, min, b;
+       	Jobs temp;
+
+       //running selection sort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
+       for (a = 0; a < (numberOfJobs - 1); a++)
+       {
+           min = a;
+           for (b = a + 1; b < numberOfJobs; b++){
+		if(jobsArry[b].getArrival() == jobsArry[min].getArrival()){
+			if(jobsArry[b].getDuration() < jobsArry[min].getDuration()) min = b;
+		}
+               	if(jobsArry[b].getArrival() < jobsArry[min].getArrival()){
+                   	min = b;
+		}
+
+           }
+           temp = jobsArry[min];
+           jobsArry[min] = jobsArry[a];
+           jobsArry[a] = temp;
+       }
+
+        int numberOfCompletedJobs = 0;
+        int timer = 0, shortestJobTimeRemaining = INT_MAX;
+        int shortestJob = 0;
+        bool shortestJobFound = false;
+
+	//look for shortest to completion job
+        while(numberOfCompletedJobs != numberOfJobs)
+        {
+      	      for(int j = 0; j < numberOfJobs; j++){
+		    //1.If job is less than or equivalent to the current time the timer has passed
+		    //2.The remaining time of the job is less than the current job's remaining job time
+		    //3.The remaing time of the job is less than 0
+                	if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
+                    		shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
+                    		shortestJob = j;
+				shortestJobFound = true;
+                	}
+            	}
+		//if job has not started before and all jobs were checked in the jobsArry
+
+
+
+            if(shortestJobFound == false) {//if shortest was not found keep timer going
+                timer++;
+                continue;
+            }
+
+	    if(!jobsArry[shortestJob].getjobStarted()){
+
+                jobsArry[shortestJob].setStartTime(timer);
+                jobsArry[shortestJob].setjobStarted(true);
+
+            }
+
+            // Reduce job's remaining time by one
+            jobsArry[shortestJob].setRemainingTime(jobsArry[shortestJob].getRemainingTime()-1);
+
+            // Update shortestJobTimeRemaining
+            shortestJobTimeRemaining = jobsArry[shortestJob].getRemainingTime();
+
+            // If a job is completed
+            if(jobsArry[shortestJob].getRemainingTime() == 0) {
+
+                // Increment numberOfCompletedJobs
+                numberOfCompletedJobs++;
+                shortestJobFound = false;
+
+                // Set finish time of current job
+                jobsArry[shortestJob].setFinishTime(timer+1);
+            }
+	    if(shortestJobTimeRemaining == 0) shortestJobTimeRemaining = INT_MAX;
+
+
+            // Increment timer
+            timer++;
+	}
+
+       outputJobs(jobsArry, numberOfJobs);
+
+}
+
 void RR(Jobs *jobsArry, int numberOfJobs){
     int a, min, b, numberOfJobsDone = 0;
     Jobs temp;
