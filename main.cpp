@@ -278,6 +278,9 @@ void STCF(Jobs *jobsArry, int numberOfJobs){
 }
 
 void RR(Jobs *jobsArry, int numberOfJobs){
+	for(int f = 0; f < numberOfJobs; f++){
+		jobsArry[f].setRemainingTime(jobsArry[f].getDuration());//resetting remaining times for all jobs
+	}
     int a, min, b, numberOfJobsDone = 0;
     Jobs temp;
 	int currentTimeStamp = 0;//time stamp starts at zero
@@ -357,7 +360,8 @@ void RR(Jobs *jobsArry, int numberOfJobs){
     }
 	outputJobs(jobsArry, numberOfJobs);
 }
-void outputJobs(Jobs *jobsArry, int numberOfJobs){//print jobs results
+void outputJobs(Jobs *jobsArry, int numberOfJobs){
+	//print jobs results
 	cout << "\t\tStart Time" << "\tFinish Time" << "\tTotal Time Elapsed" << "\tResponse Time\n";
 	cout << "_____________________________________________________________________________________\n";
     for(int a = 0; a < numberOfJobs; a++){
