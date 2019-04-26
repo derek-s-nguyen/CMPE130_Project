@@ -340,11 +340,11 @@ void RR(Jobs *jobsArry, int numberOfJobs){
 	    		else{//this is first time job starts, so set start time
 	    			jobAlreadyStarted[i] = true;
 	    			jobsArry[i].setStartTime(currentTimeStamp);
-	    			if(jobsArry[i].getRemainingTime() >= 5){
-	    				jobsArry[i].takeTimeSliceAway(5);//we chose 5 as the quanta of time that a job is alloted in the RR scheduler
-		    			currentTimeStamp = currentTimeStamp + 5;//increase currentTimeStamp by one time interval
+	    			if(jobsArry[i].getRemainingTime() >= 1){
+	    				jobsArry[i].takeTimeSliceAway(1);//we chose 1 as the quanta of time that a job is alloted in the RR scheduler
+		    			currentTimeStamp = currentTimeStamp + 1;//increase currentTimeStamp by one time interval
 	    			}
-	    			else{//time is less than 5 so just take it all away
+	    			else{//time is less than 1 so just take it all away
 	    				currentTimeStamp = currentTimeStamp + jobsArry[i].getRemainingTime();//increase currentTimeStamp by one time interval
 	    				jobsArry[i].takeTimeSliceAway(jobsArry[i].getRemainingTime());
 	    			}
