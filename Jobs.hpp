@@ -26,13 +26,18 @@ public:
 	int getFinishTime();
 	int getTotalTimeElapsed();
 	int getResponseTime();
+	bool getjobStarted();
 	void setStartTime(int start);
 	void setFinishTime(int finish);
 	void setTotalTimeElapsed(int total);
+	void setRemainingTime(int time);
 	void setResponseTime(int response);
+	void setjobStarted(bool started);
+	
 private:
 	int arrival, completion, ID, duration, remainingTime;
 	int startTime, finishTime, totalTimeElapsed, responseTime;
+	bool jobStarted;
 };
 
 #endif /* JOBS_HPP_ */
