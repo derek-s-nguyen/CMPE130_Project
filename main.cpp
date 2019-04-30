@@ -26,8 +26,10 @@ void STCF(Jobs *jobsArry, int numberOfJobs);
 void RR(Jobs *jobsArry, int numberOfJobs);
 int FIFO_partition(Jobs *jobsArry, int low, int high);
 int SJF_partition(Jobs *jobsArry, int low, int high);
+int BJF_partition(Jobs *jobsArry, int low, int high);
 void FIFO_quickSort(Jobs *jobsArry, int low, int high); 
 void SJF_quickSort(Jobs *jobsArry, int low, int high);
+void BJF_quickSort(Jobs *jobsArry, int low, int high);
 int findNumJobs();
 void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
@@ -146,19 +148,8 @@ void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
     Jobs key, temp;
     int k, currentTimeStamp = 0;//time stamp starts at zero
 
-    //running selection sort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
-    for (a = 0; a < (numberOfJobs - 1); a++)
-    {
-        min = a;
-        for (b = a + 1; b < numberOfJobs; b++){
-            if (jobsArry[b].getArrival() < jobsArry[min].getArrival()){
-                min = b;
-            }
-        }
-        temp = jobsArry[min];
-        jobsArry[min] = jobsArry[a];
-        jobsArry[a] = temp;
-    }
+    //running quicksort just to sort the jobs by increasing order of arrival times
+    FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
     //run the first job to get a starting time stamp (assuming no 2 jobs arrive at the same time)
     if(jobsArry[0].getArrival() > currentTimeStamp)//if there are no jobs to schedule
@@ -171,22 +162,10 @@ void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
 
     for(k = 1; k < numberOfJobs; k++){
         /*
-        run insertion sort (based on decreasing duration time) on the array from the job's index up to the job with the highest
+        run quicksort (based on decreasing duration time) on the array from the job's index up to the job with the highest
         arrival time within (<=) the currentTimeStamp
         */
-        for (i = (k + 1); i <= getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs); i++) {
-            key = jobsArry[i];
-            j = i - 1;
-
-            /* Move elements of arr[0..i-1], that are
-              less than key, to one position ahead
-              of their current position */
-            while (j >= k && jobsArry[j].getDuration() < key.getDuration()) {
-                jobsArry[j + 1] = jobsArry[j];
-                j = j - 1;
-            }
-            jobsArry[j + 1] = key;
-        }
+        BJF_quickSort(jobsArry, k, getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs));
         //set the appropriate values
         if(jobsArry[k].getArrival() > currentTimeStamp)//if there are no jobs to schedule
         {
@@ -484,5 +463,42 @@ void SJF_quickSort(Jobs *jobsArry, int low, int high)
 		partition and after partition */ 
 		SJF_quickSort(jobsArry, low, pi - 1); 
 		SJF_quickSort(jobsArry, pi + 1, high); 
+	} 
+}
+int BJF_partition(Jobs *jobsArry, int low, int high) 
+{ 
+	Jobs pivot = jobsArry[high]; // pivot 
+	int i = (low - 1); // Index of smaller element
+	Jobs temp;
+
+	for (int j = low; j <= high - 1; j++) 
+	{ 
+		/* If current element is smaller than or 
+		equal to pivot  */
+		if (jobsArry[j].getDuration() >= pivot.getDuration()) 
+		{ 
+			i++; // increment index of smaller element 
+			temp = jobsArry[j];/* swap */
+			jobsArry[j] = jobsArry[i];
+			jobsArry[i] = temp;
+		} 
+	} 
+	temp = jobsArry[high];/* swap */
+	jobsArry[high] = jobsArry[i + 1];
+	jobsArry[i + 1] = temp;
+	return (i + 1); 
+} 
+void BJF_quickSort(Jobs *jobsArry, int low, int high) 
+{ 
+	if (low < high) 
+	{ 
+		/* pi is partitioning index, jobsArry[p] is now 
+		at right place */
+		int pi = BJF_partition(jobsArry, low, high); 
+
+		/* Separately sort elements before 
+		partition and after partition */ 
+		BJF_quickSort(jobsArry, low, pi - 1); 
+		BJF_quickSort(jobsArry, pi + 1, high); 
 	} 
 }
