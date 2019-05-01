@@ -271,24 +271,13 @@ void RR(Jobs *jobsArry, int numberOfJobs){
     int currentTimeStamp = 0;//time stamp starts at zero
     bool jobAlreadyStarted[numberOfJobs], alreadyCheckedIfJobDone[numberOfJobs];
 
-    //running selection sort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
-    for (a = 0; a < (numberOfJobs - 1); a++)
-    {
-        jobAlreadyStarted[a] = false;//initializing all jobs to 'not yet started'
-        alreadyCheckedIfJobDone[a] = false;
-        min = a;
-        for (b = a + 1; b < numberOfJobs; b++){
-            if (jobsArry[b].getArrival() < jobsArry[min].getArrival()){
-                min = b;
-            }
-        }
-        temp = jobsArry[min];
-        jobsArry[min] = jobsArry[a];
-        jobsArry[a] = temp;
-    }
-    //the selection sort before this does not initialize the last element of the bool arrays
-    jobAlreadyStarted[(numberOfJobs - 1)] = false;
-    alreadyCheckedIfJobDone[(numberOfJobs - 1)] = false;
+    //running quicksort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
+    FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
+    //initialize the bool arrays to false
+	for(int k = 0; k < numberOfJobs; k++){
+		jobAlreadyStarted[k] = false;
+		alreadyCheckedIfJobDone[k] = false;
+	}
 
     /*
     jobs whose arrival time is within the current time stamp need to be time sliced into predetermined quanta of time
