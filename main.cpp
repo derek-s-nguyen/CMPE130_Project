@@ -186,64 +186,60 @@ void STCF(Jobs *jobsArry, int numberOfJobs){
 	//sorting the jobs array by increasing order of arrival times using quicksort
     FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
-        int numberOfCompletedJobs = 0;
-        int timer = 0, shortestJobTimeRemaining = INT_MAX;
-        int shortestJob = 0;
-        bool shortestJobFound = false;
-
-    //look for shortest to completion job
-        while(numberOfCompletedJobs != numberOfJobs)
-        {
-              for(int j = 0; j < numberOfJobs; j++){
-            //1.If job is less than or equivalent to the current time the timer has passed
-            //2.The remaining time of the job is less than the current job's remaining job time
-            //3.The remaing time of the job is less than 0
-                    if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
-                            shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
-                            shortestJob = j;
+	int numberOfCompletedJobs = 0;
+	int timer = 0, shortestJobTimeRemaining = INT_MAX;
+	int shortestJob = 0;
+	bool shortestJobFound = false;
+	
+	while(numberOfCompletedJobs != numberOfJobs)
+	{
+		for(int j = 0; j < numberOfJobs; j++){
+			/* Three potential cases:
+			1.If job is less than or equivalent to the current time the timer has passed
+			2.The remaining time of the job is less than the current job's remaining job time
+			3.The remaing time of the job is less than 0 */
+			if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
+				shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
+				shortestJob = j;
                 shortestJobFound = true;
-                    }
-                }
+			}
+		}
         //if job has not started before and all jobs were checked in the jobsArry
 
-
-
-            if(shortestJobFound == false) {//if shortest was not found keep timer going
-                timer++;
-                continue;
-            }
+		if(shortestJobFound == false) {//if shortest was not found keep timer going
+			timer++;
+			continue;
+		}
 
         if(!jobsArry[shortestJob].getjobStarted()){
 
-                jobsArry[shortestJob].setStartTime(timer);
-                jobsArry[shortestJob].setjobStarted(true);
+			jobsArry[shortestJob].setStartTime(timer);
+			jobsArry[shortestJob].setjobStarted(true);
 
-            }
+		}
 
-            // Reduce job's remaining time by one
-            jobsArry[shortestJob].setRemainingTime(jobsArry[shortestJob].getRemainingTime()-1);
+		// Reduce job's remaining time by one
+		jobsArry[shortestJob].setRemainingTime(jobsArry[shortestJob].getRemainingTime()-1);
 
-            // Update shortestJobTimeRemaining
-            shortestJobTimeRemaining = jobsArry[shortestJob].getRemainingTime();
+		// Update shortestJobTimeRemaining
+		shortestJobTimeRemaining = jobsArry[shortestJob].getRemainingTime();
 
-            // If a job is completed
-            if(jobsArry[shortestJob].getRemainingTime() == 0) {
+		// If a job is completed
+		if(jobsArry[shortestJob].getRemainingTime() == 0) {
 
-                // Increment numberOfCompletedJobs
-                numberOfCompletedJobs++;
-                shortestJobFound = false;
+			// Increment numberOfCompletedJobs
+			numberOfCompletedJobs++;
+			shortestJobFound = false;
 
-                // Set finish time of current job
-                jobsArry[shortestJob].setFinishTime(timer+1);
-            }
+			// Set finish time of current job
+			jobsArry[shortestJob].setFinishTime(timer+1);
+		}
         if(shortestJobTimeRemaining == 0) shortestJobTimeRemaining = INT_MAX;
-
-
-            // Increment timer
-            timer++;
+		// Increment timer
+		timer++;
     }
 
-       outputJobs(jobsArry, numberOfJobs);
+	outputJobs(jobsArry, numberOfJobs);
 
 }
 
