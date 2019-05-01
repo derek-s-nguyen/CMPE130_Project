@@ -35,7 +35,22 @@ void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
 int main() {
     int numberOfJobsFound = 0;
+    int userJobsNumber = 0;
     ifstream in_stream;
+
+    char user_answer;
+    //give the user a choice of randomizing the numbers in the jobs.dat file
+    cout << "Would you like to randomize the input file? (Y/N)" << endl;
+    cin >> user_answer;
+    if(user_answer == 'Y'){
+        cout << "If yes, how many jobs would you like to run?" << endl;
+        cin >> userJobsNumber;
+
+    }
+    else if(user_answer == 'N'){
+        exit(1);
+    }
+
     in_stream.open("jobs.dat");
 
     numberOfJobsFound = findNumJobs();
@@ -63,16 +78,6 @@ int main() {
     RR(jobsArry, numberOfJobsFound);
     cout << endl;
 
-    char user_answer;
-    //give the user a choice of randomizing the numbers in the jobs.dat file
-    cout << "Would you like to randomize the input file? (Y/N)" << endl;
-    cin >> user_answer;
-    if(user_answer == 'Y'){
-
-    }
-    else if(user_answer == 'N'){
-        exit(1);
-    }
     return 0;
 }
 //*NOTE: this FIFO function also sorts the array of jobs in increasing order of arrival times
