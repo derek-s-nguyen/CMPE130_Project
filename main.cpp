@@ -34,7 +34,7 @@ int findNumJobs();
 void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
 int main() {
-    int numberOfJobsFound = 0;
+    int numberOfJobsFound = 0, upperBound = 0, lowerBound = 0, randomNum = 0;
     int userJobsNumber = 0;
     ifstream in_stream;
 
@@ -42,13 +42,22 @@ int main() {
     //give the user a choice of randomizing the numbers in the jobs.dat file
     cout << "Would you like to randomize the input file? (Y/N)" << endl;
     cin >> user_answer;
-    if(user_answer == 'Y'){
+    if((user_answer == 'y') || (user_answer == 'Y')) {
         cout << "If yes, how many jobs would you like to run?" << endl;
         cin >> userJobsNumber;
+		/* _____________________________________NEED TO CHECK AND MAKE SURE THAT THE USER ENTERED A MULTIPLE OF 3 FOR user_answer!!!!_____________________________________*/
+		cout << "What is the upper bound?\n";
+		cin >> upperBound;
+		cout << "What is the lower bound?\n";
+		cin >> lowerBound;
+		for(int f = 0; f < userJobsNumber; f++){
+			randomNum = rand() % upperBound + lowerBound;     // v2 in the range 1 to 100
+			//add each set of 3 numbers to jobs.dat then new line for next row
+		}
 
     }
-    else if(user_answer == 'N'){
-        exit(1);
+    else if((user_answer == 'N') || (user_answer == 'n')){
+        cout << "Ok, using the existing jobs.dat file.\n";
     }
 
     in_stream.open("jobs.dat");
