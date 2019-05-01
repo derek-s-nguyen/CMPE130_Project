@@ -67,10 +67,10 @@ int main() {
     //give the user a choice of randomizing the numbers in the jobs.dat file
     cout << "Would you like to randomize the input file? (Y/N)" << endl;
     cin >> user_answer;
-    if(user_answer == Y){
+    if(user_answer == 'Y'){
 
     }
-    else if(user_answer == N){
+    else if(user_answer == 'N'){
         exit(1);
     }
     return 0;
