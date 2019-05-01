@@ -181,25 +181,10 @@ void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
 void STCF(Jobs *jobsArry, int numberOfJobs){
 
     int a, min, b;
-        Jobs temp;
+	Jobs temp;
 
-       //running selection sort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
-       for (a = 0; a < (numberOfJobs - 1); a++)
-       {
-           min = a;
-           for (b = a + 1; b < numberOfJobs; b++){
-        if(jobsArry[b].getArrival() == jobsArry[min].getArrival()){
-            if(jobsArry[b].getDuration() < jobsArry[min].getDuration()) min = b;
-        }
-                if(jobsArry[b].getArrival() < jobsArry[min].getArrival()){
-                    min = b;
-        }
-
-           }
-           temp = jobsArry[min];
-           jobsArry[min] = jobsArry[a];
-           jobsArry[a] = temp;
-       }
+	//sorting the jobs array by increasing order of arrival times using quicksort
+    FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
         int numberOfCompletedJobs = 0;
         int timer = 0, shortestJobTimeRemaining = INT_MAX;
