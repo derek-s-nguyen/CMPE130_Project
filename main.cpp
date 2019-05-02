@@ -123,19 +123,6 @@ void SJF(Jobs *jobsArry, int numberOfJobs){//no preemption
         arrival time within (<=) the currentTimeStamp
         */
 		SJF_quickSort(jobsArry, k, getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs));
-        // for (i = (k + 1); i <= getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs); i++) {
-            // key = jobsArry[i];
-            // j = i - 1;
-
-            // /* Move elements of arr[0..i-1], that are
-              // greater than key, to one position ahead
-              // of their current position */
-            // while (j >= k && jobsArry[j].getDuration() > key.getDuration()) {
-                // jobsArry[j + 1] = jobsArry[j];
-                // j = j - 1;
-            // }
-            // jobsArry[j + 1] = key;
-        // }
         //set the appropriate values
         if(jobsArry[k].getArrival() > currentTimeStamp)//if there are no jobs to schedule
         {
@@ -390,17 +377,15 @@ int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int 
 }
 int FIFO_partition(Jobs *jobsArry, int low, int high)
 {
-	Jobs pivot = jobsArry[high]; // pivot
-	int i = (low - 1); // Index of smaller element
+	Jobs pivot = jobsArry[high];
+	int i = (low - 1);
 	Jobs temp;
 
 	for (int j = low; j <= high - 1; j++)
 	{
-		/* If current element is smaller than or
-		equal to pivot  */
 		if (jobsArry[j].getArrival() <= pivot.getArrival())
 		{
-			i++; // increment index of smaller element
+			i++;
 			temp = jobsArry[j];/* swap */
 			jobsArry[j] = jobsArry[i];
 			jobsArry[i] = temp;
@@ -415,29 +400,22 @@ void FIFO_quickSort(Jobs *jobsArry, int low, int high)
 {
 	if (low < high)
 	{
-		/* pi is partitioning index, jobsArry[p] is now
-		at right place */
 		int pi = FIFO_partition(jobsArry, low, high);
-
-		/* Separately sort elements before
-		partition and after partition */
 		FIFO_quickSort(jobsArry, low, pi - 1);
 		FIFO_quickSort(jobsArry, pi + 1, high);
 	}
 }
 int SJF_partition(Jobs *jobsArry, int low, int high)
 {
-	Jobs pivot = jobsArry[high]; // pivot
-	int i = (low - 1); // Index of smaller element
+	Jobs pivot = jobsArry[high];
+	int i = (low - 1);
 	Jobs temp;
 
 	for (int j = low; j <= high - 1; j++)
 	{
-		/* If current element is smaller than or
-		equal to pivot  */
 		if (jobsArry[j].getDuration() <= pivot.getDuration())
 		{
-			i++; // increment index of smaller element
+			i++;
 			temp = jobsArry[j];/* swap */
 			jobsArry[j] = jobsArry[i];
 			jobsArry[i] = temp;
@@ -452,12 +430,7 @@ void SJF_quickSort(Jobs *jobsArry, int low, int high)
 {
 	if (low < high)
 	{
-		/* pi is partitioning index, jobsArry[p] is now
-		at right place */
 		int pi = SJF_partition(jobsArry, low, high);
-
-		/* Separately sort elements before
-		partition and after partition */
 		SJF_quickSort(jobsArry, low, pi - 1);
 		SJF_quickSort(jobsArry, pi + 1, high);
 	}
@@ -465,17 +438,15 @@ void SJF_quickSort(Jobs *jobsArry, int low, int high)
 int BJF_partition(Jobs *jobsArry, int low, int high)
 {
 
-	Jobs pivot = jobsArry[high]; // pivot
-	int i = (low - 1); // Index of smaller element
+	Jobs pivot = jobsArry[high];
+	int i = (low - 1);
 	Jobs temp;
 
 	for (int j = low; j <= high - 1; j++)
 	{
-		/* If current element is smaller than or
-		equal to pivot  */
 		if (jobsArry[j].getDuration() >= pivot.getDuration())
 		{
-			i++; // increment index of smaller element
+			i++;
 			temp = jobsArry[j];/* swap */
 			jobsArry[j] = jobsArry[i];
 			jobsArry[i] = temp;
@@ -490,12 +461,7 @@ void BJF_quickSort(Jobs *jobsArry, int low, int high)
 {
 	if (low < high)
 	{
-		/* pi is partitioning index, jobsArry[p] is now
-		at right place */
 		int pi = BJF_partition(jobsArry, low, high);
-
-		/* Separately sort elements before
-		partition and after partition */
 		BJF_quickSort(jobsArry, low, pi - 1);
 		BJF_quickSort(jobsArry, pi + 1, high);
 	}
