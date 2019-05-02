@@ -32,11 +32,13 @@ public:
 	void setTotalTimeElapsed(int total);
 	void setRemainingTime(int time);
 	void setResponseTime(int response);
+	void setjobpriority(int priority);
 	void setjobStarted(bool started);
 	
 private:
 	int arrival, completion, ID, duration, remainingTime;
 	int startTime, finishTime, totalTimeElapsed, responseTime;
+	int jobpriority;
 	bool jobStarted;
 };
 
