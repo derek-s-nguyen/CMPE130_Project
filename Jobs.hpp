@@ -4,10 +4,6 @@
 #include <fstream>
 #include <cstdlib>
 using namespace std;
-/*
-need to output:
-start time, finish time, total time elapsed, response time
-*/
 class Jobs
 {
 public:
@@ -26,20 +22,18 @@ public:
 	int getFinishTime();
 	int getTotalTimeElapsed();
 	int getResponseTime();
-	int getjobpriority();
 	bool getjobStarted();
+	int getPriority();
 	void setStartTime(int start);
 	void setFinishTime(int finish);
 	void setTotalTimeElapsed(int total);
 	void setRemainingTime(int time);
 	void setResponseTime(int response);
-	void setjobpriority(int priority);
 	void setjobStarted(bool started);
-	
+	void setPriority(int newPriority);
 private:
 	int arrival, completion, ID, duration, remainingTime;
 	int startTime, finishTime, totalTimeElapsed, responseTime;
-	int jobpriority;
 	bool jobStarted;
 };
 
