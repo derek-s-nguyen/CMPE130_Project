@@ -31,10 +31,14 @@ void FIFO_quickSort(Jobs *jobsArry, int low, int high);
 void SJF_quickSort(Jobs *jobsArry, int low, int high);
 void BJF_quickSort(Jobs *jobsArry, int low, int high);
 int findNumJobs();
+int max(int val1, int val2);
+int knapsack(int beta, int weight[], int value[], int amount_of_gems_to_steal);
 void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
 int main() {
     int numberOfJobsFound = 0;
+    int bursttime = 0;
+    int beta = 0;
     ifstream in_stream;
     in_stream.open("jobs.dat");
 
@@ -47,12 +51,24 @@ int main() {
         in_stream >> jobsArry[i];
 
     }
+    int duration[numberOfJobsFound];
+    int priority[numberOfJobsFound];
     cout << "FIFO: ";
     FIFO(jobsArry, numberOfJobsFound);
     cout << endl;
     cout << "SJF: ";
     SJF(jobsArry, numberOfJobsFound);
     cout << endl;
+    for(int i = 0; i < numberOfJobsFound; i++){
+    	jobsArry[i].setjobpriority(i+1);
+    	priority[i] = i+1;
+    }
+    for(int i = 0; i < numberOfJobsFound; i++){
+    	bursttime = jobsArry[i].getDuration() + bursttime;
+    	duration[i] = jobsArry[i].getDuration();
+    }
+    beta = bursttime / numberOfJobsFound;
+    cout << knapsack(beta,duration, priority, numberOfJobsFound);
     cout << "BJF: ";
     BJF(jobsArry, numberOfJobsFound);
     cout << endl;
@@ -471,4 +487,29 @@ void BJF_quickSort(Jobs *jobsArry, int low, int high)
 		BJF_quickSort(jobsArry, low, pi - 1); 
 		BJF_quickSort(jobsArry, pi + 1, high); 
 	} 
+}
+int max(int val1, int val2){
+	if(val1 > val2){
+		return val1;
+	}
+	else{
+		return val2;
+	}
+}
+int knapsack(int beta, int weight[], int value[], int number){
+	int K[number+1][beta+1];
+	for(int i = 0; i <= number; i++){
+		for(int j = 0; j <= beta; j++){
+			if(i == 0 || j == 0){
+				K[i][j] = 0;
+			}
+			else if(weight[i=1] <= j){
+				K[i][j] = max(value[i-1]+K[i-1][j-weight[j-1]], K[i-1][j]);
+			}
+			else{
+				K[i][j] = K[i-1][j];
+			}
+		}
+	}
+	return K[number][beta];
 }
