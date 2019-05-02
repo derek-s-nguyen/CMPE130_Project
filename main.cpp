@@ -1,10 +1,3 @@
-//============================================================================
-// Name        : scheduler.cpp
-// Author      : 
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
-//============================================================================
 #include <bits/stdc++.h>
 #include <iostream>
 #include <cmath>
@@ -15,10 +8,7 @@
 #include <ctime>
 #include "Jobs.hpp"
 using namespace std;
-/*
-need to output:
-start time, finish time, total time elapsed, response time
-*/
+#define underline "\033[4m"
 void FIFO(Jobs *jobsArry, int numberOfJobs);
 void SJF(Jobs *jobsArry, int numberOfJobs);
 void BJF(Jobs *jobsArry, int numberOfJobs);
@@ -31,10 +21,10 @@ void FIFO_quickSort(Jobs *jobsArry, int low, int high);
 void SJF_quickSort(Jobs *jobsArry, int low, int high);
 void BJF_quickSort(Jobs *jobsArry, int low, int high);
 int findNumJobs();
-int max(int val1, int val2);
-int knapsack(int beta, int weight[], int value[], int number);
 void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
+float FIFO_avgTotalTime = 0, FIFO_avgResponseTime = 0, SJF_avgTotalTime = 0, SJF_avgResponseTime = 0;
+float BJF_avgTotalTime = 0, BJF_avgResponseTime = 0, STCF_avgTotalTime = 0, STCF_avgResponseTime = 0, RR_avgTotalTime = 0, RR_avgResponseTime = 0;
 int main() {
     int numberOfJobsFound = 0;
     ifstream in_stream;
@@ -60,47 +50,29 @@ int main() {
     cout << endl;
     cout << "STCF: ";
     STCF(jobsArry, numberOfJobsFound);
-        cout << endl;
+	cout << endl;
     cout << "RR: ";
     RR(jobsArry, numberOfJobsFound);
     cout << endl;
 
-    cout << "Our solution" << endl;
+    cout << "__AVERAGE TIME ELAPSED__\n";
+    cout << "FIFO:\t" << FIFO_avgTotalTime << endl;
+    cout << "SJF:\t" << SJF_avgTotalTime << endl;
+    cout << "BJF:\t" << BJF_avgTotalTime << endl;
+    cout << "STCF:\t" << STCF_avgTotalTime << endl;
+    cout << "RR:\t" << RR_avgTotalTime << endl << endl;
 
-    int bursttime = 0;
-    int beta = 0;
-    int duration[numberOfJobsFound];
-    int priority[numberOfJobsFound];
-    for(int i = 0; i < numberOfJobsFound; i++){
-        jobsArry[i].setjobpriority(i+1);
-        priority[i] = i+1;
-    }
-    for(int i = 0; i < numberOfJobsFound; i++){
-        bursttime = jobsArry[i].getDuration() + bursttime;
-        duration[i] = jobsArry[i].getRemainingTime();
-    }
-    while(bursttime > 0){
-        beta = bursttime/ numberOfJobsFound;
-
-        knapsack(beta, duration, priority, numberOfJobsFound);
-
-
-        for(int i = 0; i < numberOfJobsFound; i++){
-            if(jobsArry[i].getRemainingTime() != jobsArry[i].getDuration() || jobsArry[i].getjobpriority() < 0){
-                jobsArry[i].setjobpriority(jobsArry[i].getjobpriority()*-1);
-                priority[i] = jobsArry[i].getjobpriority() * -1;
-            }
-        }
-        bursttime = 0;
-        for(int i = 0; i < numberOfJobsFound; i++){
-            bursttime = jobsArry[i].getRemainingTime() + bursttime;
-        }
-    }
+    cout << "__AVERAGE RESPONSE TIMES__\n";
+    cout << "FIFO:\t" << FIFO_avgResponseTime << endl;
+    cout << "SJF:\t" << SJF_avgResponseTime << endl;
+    cout << "BJF:\t" << BJF_avgResponseTime << endl;
+    cout << "STCF:\t" << STCF_avgResponseTime << endl;
+    cout << "RR:\t" << RR_avgResponseTime << endl;
     return 0;
 }
 //*NOTE: this FIFO function also sorts the array of jobs in increasing order of arrival times
 void FIFO(Jobs *jobsArry, int numberOfJobs){//no preemption
-    int k = 0;
+    int k;
     Jobs temp;
     int currentTimeStamp = 0;//time stamp starts at zero
 
@@ -121,6 +93,13 @@ void FIFO(Jobs *jobsArry, int numberOfJobs){//no preemption
         currentTimeStamp = jobsArry[k].getFinishTime();
     }
     outputJobs(jobsArry, numberOfJobs);
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    FIFO_avgTotalTime = (sumTT / numberOfJobs);
+    FIFO_avgResponseTime = (sumRT / numberOfJobs);
 }
 void SJF(Jobs *jobsArry, int numberOfJobs){//no preemption
 
@@ -143,7 +122,7 @@ void SJF(Jobs *jobsArry, int numberOfJobs){//no preemption
         run quicksort (based on increasing duration time) on the array from the job's index up to the job with the highest
         arrival time within (<=) the currentTimeStamp
         */
-        SJF_quickSort(jobsArry, k, getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs));
+		SJF_quickSort(jobsArry, k, getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs));
         // for (i = (k + 1); i <= getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs); i++) {
             // key = jobsArry[i];
             // j = i - 1;
@@ -167,12 +146,13 @@ void SJF(Jobs *jobsArry, int numberOfJobs){//no preemption
         currentTimeStamp = jobsArry[k].getFinishTime();
     }
     outputJobs(jobsArry, numberOfJobs);
-    /*
-    Need to account for arrival times--if a long job arrives earlier than a short job,
-    then the long job will run first (this is because we are not required to have preemption
-    in this implementation of SJF). Thus, the jobs whose arrival times are within the current
-    time stamp should be sorted by increasing order of duration times.
-    */
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    SJF_avgTotalTime = (sumTT / numberOfJobs);
+    SJF_avgResponseTime = (sumRT / numberOfJobs);
 }
 void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
 
@@ -207,72 +187,82 @@ void BJF(Jobs *jobsArry, int numberOfJobs){//no preemption
         currentTimeStamp = jobsArry[k].getFinishTime();
     }
     outputJobs(jobsArry, numberOfJobs);
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    BJF_avgTotalTime = (sumTT / numberOfJobs);
+    BJF_avgResponseTime = (sumRT / numberOfJobs);
 }
-
 void STCF(Jobs *jobsArry, int numberOfJobs){
 
-    Jobs temp;
+	Jobs temp;
 
-    //sorting the jobs array by increasing order of arrival times using quicksort
+	//sorting the jobs array by increasing order of arrival times using quicksort
     FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
-    int numberOfCompletedJobs = 0;
-    int timer = 0, shortestJobTimeRemaining = INT_MAX;
-    int shortestJob = 0;
-    bool shortestJobFound = false;
+	int numberOfCompletedJobs = 0;
+	int timer = 0, shortestJobTimeRemaining = INT_MAX;
+	int shortestJob = 0;
+	bool shortestJobFound = false;
 
-    while(numberOfCompletedJobs != numberOfJobs)
-    {
-        for(int j = 0; j < numberOfJobs; j++){
-            /* Three potential cases:
-            1.If job is less than or equivalent to the current time the timer has passed
-            2.The remaining time of the job is less than the current job's remaining job time
-            3.The remaing time of the job is less than 0 */
-            if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
-                shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
-                shortestJob = j;
+	while(numberOfCompletedJobs != numberOfJobs)
+	{
+		for(int j = 0; j < numberOfJobs; j++){
+			/* Three potential cases:
+			1.If job is less than or equivalent to the current time the timer has passed
+			2.The remaining time of the job is less than the current job's remaining job time
+			3.The remaing time of the job is less than 0 */
+			if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
+				shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
+				shortestJob = j;
                 shortestJobFound = true;
-            }
-        }
+			}
+		}
         //if job has not started before and all jobs were checked in the jobsArry
 
-        if(shortestJobFound == false) {//if shortest was not found keep timer going
-            timer++;
-            continue;
-        }
+		if(shortestJobFound == false) {//if shortest was not found keep timer going
+			timer++;
+			continue;
+		}
 
         if(!jobsArry[shortestJob].getjobStarted()){
 
-            jobsArry[shortestJob].setStartTime(timer);
-            jobsArry[shortestJob].setjobStarted(true);
+			jobsArry[shortestJob].setStartTime(timer);
+			jobsArry[shortestJob].setjobStarted(true);
 
-        }
+		}
 
-        // Reduce job's remaining time by one
-        jobsArry[shortestJob].setRemainingTime(jobsArry[shortestJob].getRemainingTime()-1);
+		// Reduce job's remaining time by one
+		jobsArry[shortestJob].setRemainingTime(jobsArry[shortestJob].getRemainingTime()-1);
 
-        // Update shortestJobTimeRemaining
-        shortestJobTimeRemaining = jobsArry[shortestJob].getRemainingTime();
+		// Update shortestJobTimeRemaining
+		shortestJobTimeRemaining = jobsArry[shortestJob].getRemainingTime();
 
-        // If a job is completed
-        if(jobsArry[shortestJob].getRemainingTime() == 0) {
+		// If a job is completed
+		if(jobsArry[shortestJob].getRemainingTime() == 0) {
 
-            // Increment numberOfCompletedJobs
-            numberOfCompletedJobs++;
-            shortestJobFound = false;
+			// Increment numberOfCompletedJobs
+			numberOfCompletedJobs++;
+			shortestJobFound = false;
 
-            // Set finish time of current job
-            jobsArry[shortestJob].setFinishTime(timer+1);
-        }
+			// Set finish time of current job
+			jobsArry[shortestJob].setFinishTime(timer+1);
+		}
         if(shortestJobTimeRemaining == 0) shortestJobTimeRemaining = INT_MAX;
-        // Increment timer
-        timer++;
+		// Increment timer
+		timer++;
     }
-
-    outputJobs(jobsArry, numberOfJobs);
-
+	outputJobs(jobsArry, numberOfJobs);
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    STCF_avgTotalTime = (sumTT / numberOfJobs);
+    STCF_avgResponseTime = (sumRT / numberOfJobs);
 }
-
 void RR(Jobs *jobsArry, int numberOfJobs){
     for(int f = 0; f < numberOfJobs; f++){
         jobsArry[f].setRemainingTime(jobsArry[f].getDuration());//resetting remaining times for all jobs
@@ -282,13 +272,13 @@ void RR(Jobs *jobsArry, int numberOfJobs){
     int currentTimeStamp = 0;//time stamp starts at zero
     bool jobAlreadyStarted[numberOfJobs], alreadyCheckedIfJobDone[numberOfJobs];
 
-    //running quicksort (for simplicity--should be improved) just to sort the jobs by increasing order of arrival times
+    //running quicksort just to sort the jobs by increasing order of arrival times
     FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
     //initialize the bool arrays to false
-    for(int k = 0; k < numberOfJobs; k++){
-        jobAlreadyStarted[k] = false;
-        alreadyCheckedIfJobDone[k] = false;
-    }
+	for(int k = 0; k < numberOfJobs; k++){
+		jobAlreadyStarted[k] = false;
+		alreadyCheckedIfJobDone[k] = false;
+	}
 
     /*
     jobs whose arrival time is within the current time stamp need to be time sliced into predetermined quanta of time
@@ -344,6 +334,13 @@ void RR(Jobs *jobsArry, int numberOfJobs){
         }
     }
     outputJobs(jobsArry, numberOfJobs);
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    RR_avgTotalTime = (sumTT / numberOfJobs);
+    RR_avgResponseTime = (sumRT / numberOfJobs);
 }
 void outputJobs(Jobs *jobsArry, int numberOfJobs){//print jobs results
     cout << "\t\tStart Time" << "\tFinish Time" << "\tTotal Time Elapsed" << "\tResponse Time\n";
@@ -393,143 +390,113 @@ int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int 
 }
 int FIFO_partition(Jobs *jobsArry, int low, int high)
 {
-    Jobs pivot = jobsArry[high]; // pivot
-    int i = (low - 1); // Index of smaller element
-    Jobs temp;
+	Jobs pivot = jobsArry[high]; // pivot
+	int i = (low - 1); // Index of smaller element
+	Jobs temp;
 
-    for (int j = low; j <= high - 1; j++)
-    {
-        /* If current element is smaller than or
-        equal to pivot  */
-        if (jobsArry[j].getArrival() <= pivot.getArrival())
-        {
-            i++; // increment index of smaller element
-            temp = jobsArry[j];/* swap */
-            jobsArry[j] = jobsArry[i];
-            jobsArry[i] = temp;
-        }
-    }
-    temp = jobsArry[high];/* swap */
-    jobsArry[high] = jobsArry[i + 1];
-    jobsArry[i + 1] = temp;
-    return (i + 1);
+	for (int j = low; j <= high - 1; j++)
+	{
+		/* If current element is smaller than or
+		equal to pivot  */
+		if (jobsArry[j].getArrival() <= pivot.getArrival())
+		{
+			i++; // increment index of smaller element
+			temp = jobsArry[j];/* swap */
+			jobsArry[j] = jobsArry[i];
+			jobsArry[i] = temp;
+		}
+	}
+	temp = jobsArry[high];/* swap */
+	jobsArry[high] = jobsArry[i + 1];
+	jobsArry[i + 1] = temp;
+	return (i + 1);
 }
 void FIFO_quickSort(Jobs *jobsArry, int low, int high)
 {
-    if (low < high)
-    {
-        /* pi is partitioning index, jobsArry[p] is now
-        at right place */
-        int pi = FIFO_partition(jobsArry, low, high);
+	if (low < high)
+	{
+		/* pi is partitioning index, jobsArry[p] is now
+		at right place */
+		int pi = FIFO_partition(jobsArry, low, high);
 
-        /* Separately sort elements before
-        partition and after partition */
-        FIFO_quickSort(jobsArry, low, pi - 1);
-        FIFO_quickSort(jobsArry, pi + 1, high);
-    }
+		/* Separately sort elements before
+		partition and after partition */
+		FIFO_quickSort(jobsArry, low, pi - 1);
+		FIFO_quickSort(jobsArry, pi + 1, high);
+	}
 }
 int SJF_partition(Jobs *jobsArry, int low, int high)
 {
-    Jobs pivot = jobsArry[high]; // pivot
-    int i = (low - 1); // Index of smaller element
-    Jobs temp;
+	Jobs pivot = jobsArry[high]; // pivot
+	int i = (low - 1); // Index of smaller element
+	Jobs temp;
 
-    for (int j = low; j <= high - 1; j++)
-    {
-        /* If current element is smaller than or
-        equal to pivot  */
-        if (jobsArry[j].getDuration() <= pivot.getDuration())
-        {
-            i++; // increment index of smaller element
-            temp = jobsArry[j];/* swap */
-            jobsArry[j] = jobsArry[i];
-            jobsArry[i] = temp;
-        }
-    }
-    temp = jobsArry[high];/* swap */
-    jobsArry[high] = jobsArry[i + 1];
-    jobsArry[i + 1] = temp;
-    return (i + 1);
+	for (int j = low; j <= high - 1; j++)
+	{
+		/* If current element is smaller than or
+		equal to pivot  */
+		if (jobsArry[j].getDuration() <= pivot.getDuration())
+		{
+			i++; // increment index of smaller element
+			temp = jobsArry[j];/* swap */
+			jobsArry[j] = jobsArry[i];
+			jobsArry[i] = temp;
+		}
+	}
+	temp = jobsArry[high];/* swap */
+	jobsArry[high] = jobsArry[i + 1];
+	jobsArry[i + 1] = temp;
+	return (i + 1);
 }
 void SJF_quickSort(Jobs *jobsArry, int low, int high)
 {
-    if (low < high)
-    {
-        /* pi is partitioning index, jobsArry[p] is now
-        at right place */
-        int pi = SJF_partition(jobsArry, low, high);
+	if (low < high)
+	{
+		/* pi is partitioning index, jobsArry[p] is now
+		at right place */
+		int pi = SJF_partition(jobsArry, low, high);
 
-        /* Separately sort elements before
-        partition and after partition */
-        SJF_quickSort(jobsArry, low, pi - 1);
-        SJF_quickSort(jobsArry, pi + 1, high);
-    }
+		/* Separately sort elements before
+		partition and after partition */
+		SJF_quickSort(jobsArry, low, pi - 1);
+		SJF_quickSort(jobsArry, pi + 1, high);
+	}
 }
 int BJF_partition(Jobs *jobsArry, int low, int high)
 {
-    Jobs pivot = jobsArry[high]; // pivot
-    int i = (low - 1); // Index of smaller element
-    Jobs temp;
 
-    for (int j = low; j <= high - 1; j++)
-    {
-        /* If current element is smaller than or
-        equal to pivot  */
-        if (jobsArry[j].getDuration() >= pivot.getDuration())
-        {
-            i++; // increment index of smaller element
-            temp = jobsArry[j];/* swap */
-            jobsArry[j] = jobsArry[i];
-            jobsArry[i] = temp;
-        }
-    }
-    temp = jobsArry[high];/* swap */
-    jobsArry[high] = jobsArry[i + 1];
-    jobsArry[i + 1] = temp;
-    return (i + 1);
+	Jobs pivot = jobsArry[high]; // pivot
+	int i = (low - 1); // Index of smaller element
+	Jobs temp;
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		/* If current element is smaller than or
+		equal to pivot  */
+		if (jobsArry[j].getDuration() >= pivot.getDuration())
+		{
+			i++; // increment index of smaller element
+			temp = jobsArry[j];/* swap */
+			jobsArry[j] = jobsArry[i];
+			jobsArry[i] = temp;
+		}
+	}
+	temp = jobsArry[high];/* swap */
+	jobsArry[high] = jobsArry[i + 1];
+	jobsArry[i + 1] = temp;
+	return (i + 1);
 }
 void BJF_quickSort(Jobs *jobsArry, int low, int high)
 {
-    if (low < high)
-    {
-        /* pi is partitioning index, jobsArry[p] is now
-        at right place */
-        int pi = BJF_partition(jobsArry, low, high);
+	if (low < high)
+	{
+		/* pi is partitioning index, jobsArry[p] is now
+		at right place */
+		int pi = BJF_partition(jobsArry, low, high);
 
-        /* Separately sort elements before
-        partition and after partition */
-        BJF_quickSort(jobsArry, low, pi - 1);
-        BJF_quickSort(jobsArry, pi + 1, high);
-    }
-}
-int max(int val1, int val2){
-    if(val1 > val2){
-        return val1;
-    }
-    else{
-        return val2;
-    }
-}
-int knapsack(int beta, int weight[], int value[], int number){
-    int K[number+1][beta+1];
-    for(int i = 0; i <= number; i++){
-        for(int j = 0; j <= beta; j++){
-            if(i == 0 || j == 0){
-                K[i][j] = 0;
-            }
-            else if(weight[i-1] <= beta){
-                K[i][j] = max(value[i-1]+K[i-1][beta-weight[i-1]], K[i-1][beta]);
-            }
-            else{
-                K[i][j] = K[i-1][j];
-            }
-        }
-    }
-    for(int i = 0; i <number; i++){
-        for(int j = 0; j < beta; j++){
-            cout << K[i][j]<< " ";
-        }
-        cout << endl;
-    }
-    return K[number][beta];
+		/* Separately sort elements before
+		partition and after partition */
+		BJF_quickSort(jobsArry, low, pi - 1);
+		BJF_quickSort(jobsArry, pi + 1, high);
+	}
 }
