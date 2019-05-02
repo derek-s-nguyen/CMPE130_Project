@@ -26,6 +26,7 @@ public:
 	int getFinishTime();
 	int getTotalTimeElapsed();
 	int getResponseTime();
+	int getjobpriority();
 	bool getjobStarted();
 	void setStartTime(int start);
 	void setFinishTime(int finish);
