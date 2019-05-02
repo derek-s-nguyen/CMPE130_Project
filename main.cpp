@@ -78,7 +78,7 @@ int main() {
     }
     while(bursttime > 0){
        	beta = bursttime/ numberOfJobsFound;
-       	knapsack(beta, duration, priority, numberOfJobsFound);
+       	cout << knapsack(beta, duration, priority, numberOfJobsFound); // I think this is supposed to print ? O_o
        	for(int i = 0; i < numberOfJobsFound; i++){
        		if(jobsArry[i].getRemainingTime() != jobsArry[i].getDuration() || jobsArry[i].getjobpriority() < 0){
        			jobsArry[i].setjobpriority(jobsArry[i].getjobpriority()*-1);
