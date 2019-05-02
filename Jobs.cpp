@@ -4,7 +4,7 @@
 #include <fstream>
 using namespace std;
 #include <iostream>
-Jobs::Jobs(){ arrival = 0, completion = 0, ID = 0, duration = 0, startTime = 0, finishTime = 0, totalTimeElapsed = 0, responseTime = 0, remainingTime = 0, jobStarted = false, jobpriority = 0; }
+Jobs::Jobs(){ arrival = 0, completion = 0, ID = 0, duration = 0, startTime = 0, finishTime = 0, totalTimeElapsed = 0, responseTime = 0, remainingTime = 0, jobStarted = false; }
 int Jobs::getArrival(){ return arrival; }
 int Jobs::getID(){ return ID; }
 int Jobs::getDuration(){ return duration; }
@@ -41,12 +41,10 @@ int Jobs::getStartTime(){ return startTime; }
 int Jobs::getFinishTime(){ return finishTime; }
 int Jobs::getTotalTimeElapsed(){ return totalTimeElapsed; }
 int Jobs::getResponseTime(){ return responseTime; }
-int Jobs::getjobpriority(){return jobpriority; }
 bool Jobs::getjobStarted(){ return jobStarted; }
 void Jobs::setStartTime(int start){ startTime = start; }
 void Jobs::setFinishTime(int finish){ finishTime = finish; }
 void Jobs::setTotalTimeElapsed(int total){ totalTimeElapsed = total; }
 void Jobs::setResponseTime(int response){ responseTime = response; }
 void Jobs::setRemainingTime(int time){ remainingTime = time; }
-void Jobs::setjobpriority(int priority){ jobpriority = priority; }
 void Jobs::setjobStarted(bool started){ jobStarted = started; }
