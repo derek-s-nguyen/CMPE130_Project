@@ -272,18 +272,22 @@ void RR(Jobs *jobsArry, int numberOfJobs){
     and swapped in a 'round robin' fashion
      */
     while(numberOfJobsDone != numberOfJobs){//while all jobs are not done
+		for (int j = 0; j <= getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs); j++) {
+            if(jobsArry[j].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
+                if(alreadyCheckedIfJobDone[j] == true){//you already updated numberOfJobsDone and set finish time so do nothing
+                }
+                else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
+                    alreadyCheckedIfJobDone[j] = true;
+                    numberOfJobsDone = numberOfJobsDone + 1;
+                    jobsArry[j].setFinishTime(currentTimeStamp);
+                }
+            }
+		}
         /*
         run through all jobs currently available (all jobs whose arrival time is within (<=) the currentTimeStamp)
          */
         for (int i = 0; i <= getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs); i++) {
-            if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
-                if(alreadyCheckedIfJobDone[i] == true){//you already updated numberOfJobsDone and set finish time so do nothing
-                }
-                else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
-                    alreadyCheckedIfJobDone[i] = true;
-                    numberOfJobsDone = numberOfJobsDone + 1;
-                    jobsArry[i].setFinishTime(currentTimeStamp);
-                }
+            if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired) so do nothing
             }
             else{//the 'i' job is not done (duration has not expired) so take a time slice from this job and update current time stamp
                 if(jobsArry[i].getArrival() > currentTimeStamp){//if there are no jobs to schedule
