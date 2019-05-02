@@ -47,4 +47,5 @@ void Jobs::setFinishTime(int finish){ finishTime = finish; }
 void Jobs::setTotalTimeElapsed(int total){ totalTimeElapsed = total; }
 void Jobs::setResponseTime(int response){ responseTime = response; }
 void Jobs::setRemainingTime(int time){ remainingTime = time; }
+void Jobs::setjobpriority(int priority){ jobpriority = priority; }
 void Jobs::setjobStarted(bool started){ jobStarted = started; }
