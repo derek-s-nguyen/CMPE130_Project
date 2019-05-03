@@ -23,14 +23,12 @@ public:
 	int getTotalTimeElapsed();
 	int getResponseTime();
 	bool getjobStarted();
-	int getPriority();
 	void setStartTime(int start);
 	void setFinishTime(int finish);
 	void setTotalTimeElapsed(int total);
 	void setRemainingTime(int time);
 	void setResponseTime(int response);
 	void setjobStarted(bool started);
-	void setPriority(int newPriority);
 private:
 	int arrival, completion, ID, duration, remainingTime;
 	int startTime, finishTime, totalTimeElapsed, responseTime;
