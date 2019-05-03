@@ -196,10 +196,6 @@ void STCF(Jobs *jobsArry, int numberOfJobs){
 	while(numberOfCompletedJobs != numberOfJobs)
 	{
 		for(int j = 0; j < numberOfJobs; j++){
-			/* Three potential cases:
-			1.If job is less than or equivalent to the current time the timer has passed
-			2.The remaining time of the job is less than the current job's remaining job time
-			3.The remaing time of the job is less than 0 */
 			if((jobsArry[j].getArrival() <= timer) && (jobsArry[j].getRemainingTime() < shortestJobTimeRemaining) && (jobsArry[j].getRemainingTime() > 0)) {
 				shortestJobTimeRemaining = jobsArry[j].getRemainingTime();
 				shortestJob = j;
