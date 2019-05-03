@@ -8,7 +8,6 @@
 #include <ctime>
 #include "Jobs.hpp"
 using namespace std;
-#define underline "\033[4m"
 void FIFO(Jobs *jobsArry, int numberOfJobs);
 void SJF(Jobs *jobsArry, int numberOfJobs);
 void BJF(Jobs *jobsArry, int numberOfJobs);
@@ -28,7 +27,7 @@ float BJF_avgTotalTime = 0, BJF_avgResponseTime = 0, STCF_avgTotalTime = 0, STCF
 int main() {
     int numberOfJobsFound = 0;
     ifstream in_stream;
-    in_stream.open("processes.dat");
+    in_stream.open("jobs.dat");
 
     numberOfJobsFound = findNumJobs();
 
