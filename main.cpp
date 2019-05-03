@@ -28,7 +28,7 @@ float BJF_avgTotalTime = 0, BJF_avgResponseTime = 0, STCF_avgTotalTime = 0, STCF
 int main() {
     int numberOfJobsFound = 0;
     ifstream in_stream;
-    in_stream.open("jobs.dat");
+    in_stream.open("processes.dat");
 
     numberOfJobsFound = findNumJobs();
 
