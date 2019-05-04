@@ -32,35 +32,6 @@ int main() {
     ifstream in_stream;
     in_stream.open("jobs.dat");
 
-    /*  //randomization of input file jobs.dat
-    	ofstream out_stream;
-        int index = 1;
-
-        out_stream.open("jobs.dat");
-
-        for(int i = 0; i < 99; i++){
-        	if(i == 0){
-        		out_stream << "1 ";
-        		i = i + 1;
-        	}
-        	else if((i % 3) == 0)
-        	{
-        		v2 = rand() % 20 + 1;
-        		out_stream << v2 << " ";
-        		index = index + 1;
-        		out_stream << "\n";
-        		out_stream << index << " ";
-        		i = i + 1;
-        	}
-        	else{
-        		v2 = rand() % 300 + 1;
-        		out_stream << v2 << " ";
-        	}
-        }
-    	v2 = rand() % 50 + 1;
-    	out_stream << v2;
-        out_stream.close();*/
-
     numberOfJobsFound = findNumJobs();
 
     Jobs *jobsArry = new Jobs[numberOfJobsFound];
