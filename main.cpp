@@ -13,21 +13,53 @@ void SJF(Jobs *jobsArry, int numberOfJobs);
 void BJF(Jobs *jobsArry, int numberOfJobs);
 void STCF(Jobs *jobsArry, int numberOfJobs);
 void RR(Jobs *jobsArry, int numberOfJobs);
+void RNDM(Jobs *jobsArry, int numberOfJobs);
 int FIFO_partition(Jobs *jobsArry, int low, int high);
 int SJF_partition(Jobs *jobsArry, int low, int high);
 int BJF_partition(Jobs *jobsArry, int low, int high);
+int start_partition(Jobs *jobsArry, int low, int high);
 void FIFO_quickSort(Jobs *jobsArry, int low, int high);
 void SJF_quickSort(Jobs *jobsArry, int low, int high);
 void BJF_quickSort(Jobs *jobsArry, int low, int high);
+void start_quickSort(Jobs *jobsArry, int low, int high);
 int findNumJobs();
 void outputJobs(Jobs *jobsArry, int numberOfJobs);
 int getMaxIndexOfCurrentAvailableJobs(Jobs *jobsArry, int currentTimeStamp, int numberOfJobs);
-float FIFO_avgTotalTime = 0, FIFO_avgResponseTime = 0, SJF_avgTotalTime = 0, SJF_avgResponseTime = 0;
-float BJF_avgTotalTime = 0, BJF_avgResponseTime = 0, STCF_avgTotalTime = 0, STCF_avgResponseTime = 0, RR_avgTotalTime = 0, RR_avgResponseTime = 0;
+float FIFO_avgTotalTime = 0, FIFO_avgResponseTime = 0, SJF_avgTotalTime = 0, SJF_avgResponseTime = 0, BJF_avgTotalTime = 0, BJF_avgResponseTime = 0;
+float RNDM_avgTotalTime = 0, RNDM_avgResponseTime = 0, STCF_avgTotalTime = 0, STCF_avgResponseTime = 0, RR_avgTotalTime = 0, RR_avgResponseTime = 0;
 int main() {
     int numberOfJobsFound = 0;
     ifstream in_stream;
     in_stream.open("jobs.dat");
+
+    /*  //randomization of input file jobs.dat
+    	ofstream out_stream;
+        int index = 1;
+
+        out_stream.open("jobs.dat");
+
+        for(int i = 0; i < 99; i++){
+        	if(i == 0){
+        		out_stream << "1 ";
+        		i = i + 1;
+        	}
+        	else if((i % 3) == 0)
+        	{
+        		v2 = rand() % 20 + 1;
+        		out_stream << v2 << " ";
+        		index = index + 1;
+        		out_stream << "\n";
+        		out_stream << index << " ";
+        		i = i + 1;
+        	}
+        	else{
+        		v2 = rand() % 300 + 1;
+        		out_stream << v2 << " ";
+        	}
+        }
+    	v2 = rand() % 50 + 1;
+    	out_stream << v2;
+        out_stream.close();*/
 
     numberOfJobsFound = findNumJobs();
 
@@ -53,13 +85,17 @@ int main() {
     cout << "RR: ";
     RR(jobsArry, numberOfJobsFound);
     cout << endl;
+    cout << "RNDM: ";
+    RNDM(jobsArry, numberOfJobsFound);
+    cout << endl;
 
     cout << "__AVERAGE TIME ELAPSED__\n";
     cout << "FIFO:\t" << FIFO_avgTotalTime << endl;
     cout << "SJF:\t" << SJF_avgTotalTime << endl;
     cout << "BJF:\t" << BJF_avgTotalTime << endl;
     cout << "STCF:\t" << STCF_avgTotalTime << endl;
-    cout << "RR:\t" << RR_avgTotalTime << endl << endl;
+    cout << "RR:\t" << RR_avgTotalTime << endl;
+    cout << "RNDM:\t" << RNDM_avgTotalTime << endl << endl;
 
     cout << "__AVERAGE RESPONSE TIMES__\n";
     cout << "FIFO:\t" << FIFO_avgResponseTime << endl;
@@ -67,6 +103,7 @@ int main() {
     cout << "BJF:\t" << BJF_avgResponseTime << endl;
     cout << "STCF:\t" << STCF_avgResponseTime << endl;
     cout << "RR:\t" << RR_avgResponseTime << endl;
+    cout << "RNDM:\t" << RNDM_avgResponseTime << endl;
     return 0;
 }
 //*NOTE: this FIFO function also sorts the array of jobs in increasing order of arrival times
@@ -79,9 +116,7 @@ void FIFO(Jobs *jobsArry, int numberOfJobs){//no preemption
     FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
     /*
-    need to set the following:
-    start time, finish time, total time elapsed, response time
-    */
+    need to set the following: start time, finish time, total time elapsed, response time */
     for(k = 0; k < numberOfJobs; k++){
         if(jobsArry[k].getArrival() > currentTimeStamp)//if there are no jobs to schedule
         {
@@ -236,6 +271,8 @@ void STCF(Jobs *jobsArry, int numberOfJobs){
 		// Increment timer
 		timer++;
     }
+    //running quicksort just to sort the jobs by increasing order of start times
+    start_quickSort(jobsArry, 0, numberOfJobs - 1);
 	outputJobs(jobsArry, numberOfJobs);
     float sumTT = 0, sumRT = 0;
     for(int i = 0; i < numberOfJobs; i++){
@@ -305,7 +342,7 @@ void RR(Jobs *jobsArry, int numberOfJobs){
                         jobsArry[i].takeTimeSliceAway(1);//we chose 1 as the quanta of time that a job is alloted in the RR scheduler
                         currentTimeStamp = currentTimeStamp + 1;//increase currentTimeStamp by one time interval
                     }
-                    else{//time is less than 5 so just take it all away
+                    else{
                         currentTimeStamp = currentTimeStamp + jobsArry[i].getRemainingTime();//increase currentTimeStamp by one time interval
                         jobsArry[i].takeTimeSliceAway(jobsArry[i].getRemainingTime());
                     }
@@ -327,6 +364,71 @@ void RR(Jobs *jobsArry, int numberOfJobs){
     }
     RR_avgTotalTime = (sumTT / numberOfJobs);
     RR_avgResponseTime = (sumRT / numberOfJobs);
+}
+void RNDM(Jobs *jobsArry, int numberOfJobs){
+    srand((unsigned)time(0));
+    int random_index = rand();
+    int numberOfJobsDone = 0;
+    Jobs temp;
+    int currentTimeStamp = 0;//time stamp starts at zero
+    bool jobAlreadyStarted[numberOfJobs], alreadyCheckedIfJobDone[numberOfJobs];
+	for(int f = 0; f < numberOfJobs; f++){
+        jobsArry[f].setRemainingTime(jobsArry[f].getDuration());//resetting remaining times for all jobs
+        jobsArry[f].setFinishTime(0);//resetting finish time
+        jobsArry[f].setStartTime(999);//resetting start time
+        jobsArry[f].setjobStarted(false);
+        jobAlreadyStarted[f] = false;
+        alreadyCheckedIfJobDone[f] = false;
+    }
+    //running quicksort just to sort the jobs by increasing order of arrival times
+    FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
+    jobsArry[0].setFinishTime(jobsArry[0].getDuration());
+    currentTimeStamp = jobsArry[0].getDuration();
+    jobsArry[0].setStartTime(jobsArry[0].getArrival());
+    numberOfJobsDone = 1;
+    /* jobs whose arrival time is within the current time stamp need to be time sliced
+    into predetermined quanta of time and swapped in a 'round robin' fashion */
+    while(numberOfJobsDone != numberOfJobs){//while all jobs are not done
+        //fixing the currentTimeStamp if all jobs within the currentTimeStamp are done
+        if(numberOfJobsDone == (getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs) + 1))//if all the jobs within the currentTimeStamp are done
+        {
+            currentTimeStamp = jobsArry[numberOfJobsDone].getArrival();//adjust the current time stamp to skip to the next job's arrival time
+        }
+		random_index = ((rand() % getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs)) + 1);
+		while(jobsArry[random_index].getRemainingTime() <= 0){
+			random_index = ((rand() % getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs)) + 1);
+		}
+        if(jobsArry[random_index].getArrival() > currentTimeStamp){//if there are no jobs to schedule
+            currentTimeStamp = jobsArry[random_index].getArrival();//adjust the current time stamp to skip to the next job's arrival time
+        }
+		if(jobAlreadyStarted[random_index] == false){
+			jobAlreadyStarted[random_index] = true;
+			jobsArry[random_index].setStartTime(currentTimeStamp);
+			currentTimeStamp = currentTimeStamp + jobsArry[random_index].getDuration();
+			jobsArry[random_index].setRemainingTime(0);
+			jobsArry[random_index].setjobStarted(true);
+			if(alreadyCheckedIfJobDone[random_index] == false){
+				alreadyCheckedIfJobDone[random_index] = true;
+				jobsArry[random_index].setFinishTime(currentTimeStamp);
+				numberOfJobsDone++;
+			}
+		}
+        //fixing the currentTimeStamp if all jobs within the currentTimeStamp are done
+        if(numberOfJobsDone == (getMaxIndexOfCurrentAvailableJobs(jobsArry, currentTimeStamp, numberOfJobs) + 1))//if all the jobs within the currentTimeStamp are done
+        {
+            currentTimeStamp = jobsArry[numberOfJobsDone].getArrival();//adjust the current time stamp to skip to the next job's arrival time
+        }
+    }
+    //running quicksort just to sort the jobs by increasing order of start times
+    start_quickSort(jobsArry, 0, numberOfJobs - 1);
+	outputJobs(jobsArry, numberOfJobs);
+    float sumTT = 0, sumRT = 0;
+    for(int i = 0; i < numberOfJobs; i++){
+    	sumTT = sumTT + (jobsArry[i].getFinishTime() - jobsArry[i].getArrival());
+    	sumRT = sumRT + (jobsArry[i].getStartTime() - jobsArry[i].getArrival());
+    }
+    RNDM_avgTotalTime = (sumTT / numberOfJobs);
+    RNDM_avgResponseTime = (sumRT / numberOfJobs);
 }
 void outputJobs(Jobs *jobsArry, int numberOfJobs){//print jobs results
     cout << "\t\tStart Time" << "\tFinish Time" << "\tTotal Time Elapsed" << "\tResponse Time\n";
@@ -463,5 +565,36 @@ void BJF_quickSort(Jobs *jobsArry, int low, int high)
 		int pi = BJF_partition(jobsArry, low, high);
 		BJF_quickSort(jobsArry, low, pi - 1);
 		BJF_quickSort(jobsArry, pi + 1, high);
+	}
+}
+int start_partition(Jobs *jobsArry, int low, int high)
+{
+
+	Jobs pivot = jobsArry[high];
+	int i = (low - 1);
+	Jobs temp;
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		if (jobsArry[j].getStartTime() <= pivot.getStartTime())
+		{
+			i++;
+			temp = jobsArry[j];/* swap */
+			jobsArry[j] = jobsArry[i];
+			jobsArry[i] = temp;
+		}
+	}
+	temp = jobsArry[high];/* swap */
+	jobsArry[high] = jobsArry[i + 1];
+	jobsArry[i + 1] = temp;
+	return (i + 1);
+}
+void start_quickSort(Jobs *jobsArry, int low, int high)
+{
+	if (low < high)
+	{
+		int pi = start_partition(jobsArry, low, high);
+		start_quickSort(jobsArry, low, pi - 1);
+		start_quickSort(jobsArry, pi + 1, high);
 	}
 }
