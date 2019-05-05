@@ -86,8 +86,7 @@ void FIFO(Jobs *jobsArry, int numberOfJobs){//no preemption
     //sorting the jobs array by increasing order of arrival times using quicksort
     FIFO_quickSort(jobsArry, 0, numberOfJobs - 1);
 
-    /*
-    need to set the following: start time, finish time, total time elapsed, response time */
+    /* need to set the following: start time, finish time, total time elapsed, response time */
     for(k = 0; k < numberOfJobs; k++){
         if(jobsArry[k].getArrival() > currentTimeStamp)//if there are no jobs to schedule
         {
@@ -300,10 +299,28 @@ void RR(Jobs *jobsArry, int numberOfJobs){
                     if(jobsArry[i].getRemainingTime() >= 1){
                         jobsArry[i].takeTimeSliceAway(1);//we chose 1 as the quanta of time that a job is alloted in the RR scheduler
                         currentTimeStamp = currentTimeStamp + 1;//increase currentTimeStamp by one time interval
+                        if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
+                            if(alreadyCheckedIfJobDone[i] == true){//you already updated numberOfJobsDone and set finish time so do nothing
+                            }
+                            else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
+                                alreadyCheckedIfJobDone[i] = true;
+                                numberOfJobsDone = numberOfJobsDone + 1;
+                                jobsArry[i].setFinishTime(currentTimeStamp);
+                            }
+                        }
                     }
                     else{//time is less than 1 so just take it all away
                         currentTimeStamp = currentTimeStamp + jobsArry[i].getRemainingTime();//increase currentTimeStamp by remainingTime
                         jobsArry[i].takeTimeSliceAway(jobsArry[i].getRemainingTime());
+                        if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
+                            if(alreadyCheckedIfJobDone[i] == true){//you already updated numberOfJobsDone and set finish time so do nothing
+                            }
+                            else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
+                                alreadyCheckedIfJobDone[i] = true;
+                                numberOfJobsDone = numberOfJobsDone + 1;
+                                jobsArry[i].setFinishTime(currentTimeStamp);
+                            }
+                        }
                     }
                 }
                 else{//this is first time job starts, so set start time
@@ -312,10 +329,28 @@ void RR(Jobs *jobsArry, int numberOfJobs){
                     if(jobsArry[i].getRemainingTime() >= 1){
                         jobsArry[i].takeTimeSliceAway(1);//we chose 1 as the quanta of time that a job is alloted in the RR scheduler
                         currentTimeStamp = currentTimeStamp + 1;//increase currentTimeStamp by one time interval
+                        if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
+                            if(alreadyCheckedIfJobDone[i] == true){//you already updated numberOfJobsDone and set finish time so do nothing
+                            }
+                            else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
+                                alreadyCheckedIfJobDone[i] = true;
+                                numberOfJobsDone = numberOfJobsDone + 1;
+                                jobsArry[i].setFinishTime(currentTimeStamp);
+                            }
+                        }
                     }
                     else{
                         currentTimeStamp = currentTimeStamp + jobsArry[i].getRemainingTime();//increase currentTimeStamp by one time interval
                         jobsArry[i].takeTimeSliceAway(jobsArry[i].getRemainingTime());
+                        if(jobsArry[i].getRemainingTime() <= 0){//the 'i' job is done (duration has expired)
+                            if(alreadyCheckedIfJobDone[i] == true){//you already updated numberOfJobsDone and set finish time so do nothing
+                            }
+                            else{//you have not updated numberOfJobsDone so set finish time, increment numberOfJobsDone, and update alreadyCheckedIfJobsDone
+                                alreadyCheckedIfJobDone[i] = true;
+                                numberOfJobsDone = numberOfJobsDone + 1;
+                                jobsArry[i].setFinishTime(currentTimeStamp);
+                            }
+                        }
                     }
                 }
             }
